@@ -37,7 +37,25 @@
 
 
       <div class="col-12 col-md-4">
-        FORMULARIO
+        
+        <form id="todoForm" class="p-5 bg-dark-subtle">
+          <!-- Title -->
+          <div class="mb-3">
+            <label class="form-label">Tarea</label>
+            <input type="text" class="form-control" name="title" placeholder="Título de la tarea" required>
+          </div>
+          <!-- Date -->
+          <div class="mb-3">
+            <label class="form-label">Fecha de creación</label>
+            <input type="date" class="form-control" name="date" placeholder="Fecha de creación">
+          </div>
+
+          <button class="btn btn-primary" type="submit">Agregar</button>
+
+
+        </form>
+
+
       </div>
 
 

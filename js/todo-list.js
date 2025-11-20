@@ -28,24 +28,28 @@ const TODOS = [
 
 const listaTodoHTML = document.getElementById("lista-todo");
 
-console.dir(listaTodoHTML);
+const todoFormHTML = document.getElementById("todoForm"); // obtener referencia al formulario
 
 // listaTodoHTML.innerHTML = "<h2>TExto desde JS</h2>";
 
+// # Renderizar la lista de tareas en el HTML
+function renderizarTodos() {
 
-for(let todo of TODOS) {
+  listaTodoHTML.innerHTML = ""; // limpiar el contenido previo
 
-  listaTodoHTML.innerHTML += `<div class="todo-item">
+  for (let todo of TODOS) {
+    const isCompleted = todo.completed ? "checked" : "";
 
-              <div class="todo-check">
-                <input class="form-check-input" type="checkbox">
+    listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
+
+              <div class="todo-check todo-nueva">
+                <input  class="form-check-input" type="checkbox" ${isCompleted}>
               </div>
 
               <div class="todo-info">
                 <div class="todo-title"> ${todo.title} </div>
                 <div class="todo-date"> ${todo.date} </div>
               </div>
-
 
               <div class="todo-actions">
                 <button class="btn btn-sm btn-primary">
@@ -55,8 +59,63 @@ for(let todo of TODOS) {
                   <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
-
             
           </div>`;
+  }
 
 }
+
+renderizarTodos(); // llamar a la función para renderizar la lista de tareas
+
+
+// # Manejo del evento submit del formulario
+todoFormHTML.addEventListener("submit", function(event) {
+
+  event.preventDefault(); // prevenir el comportamiento por defecto del formulario
+  const el = event.target.elements;
+  // Obtener los datos del formulario y armar una nueva tarea
+  const nuevaTarea = {
+    title: el.title.value, // el.title hace referencia al input con name="title"
+    date: el.date.value,
+    completed: false
+  }
+  console.log(nuevaTarea);
+
+  // Vamos a agregar la nueva tarea a nuestro array TODOS
+  TODOS.push(nuevaTarea);
+  console.log(TODOS)
+
+  renderizarTodos(); // volver a renderizar la lista de tareas
+
+})
+
+
+
+
+// botonHTML.addEventListener("click", function() {
+
+//   console.log("Click en el botón");
+//   console.log("El evento sucedió");
+
+// })
+
+// botonHTML.addEventListener("mouseover", function() {
+  
+//   console.log("Mouse over en el botón");
+
+// })
+
+
+// if(todo.completed) {
+
+//   const STRING = `<input class="form-check-input" type="checkbox" checked>`
+//   // cuando el elemento se renderiza en el navegador
+
+// } else {
+  
+//   const STRING = `<input class="form-check-input" type="checkbox" >`
+
+// }
+
+// Ternary operator
+// condicion ? expressionTrue : expressionFalse
