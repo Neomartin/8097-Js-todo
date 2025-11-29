@@ -1,25 +1,30 @@
 const TODOS = [
   {
+    id: 10,
     title: "Comprar pan",
     date: "20-10-2023",
     completed: false,
   },
   {
+    id: 20,
     title: "Estudiar JavaScript",
     date: "21-10-2025",
     completed: true,
   },
   {
+    id: 30,
     title: "Hacer ejercicio",
     date: "22-10-2024",
     completed: false,
   },
   {
+    id: 40,
     title: "Leer un libro",
     date: "23-10-2025",
     completed: true,
   },
   {
+    id: 50,
     title: "Llamar a mamá",
     date: "24-10-2023",
     completed: false,
@@ -30,9 +35,43 @@ const listaTodoHTML = document.getElementById("lista-todo");
 
 const todoFormHTML = document.getElementById("todoForm"); // obtener referencia al formulario
 
+
+function cambiarEstadoTarea() {
+  // lógica para cambiar el estado de la tarea
+  // Nosotros vamos a buscar la tarea donde se hizo click
+  // y cambiar su estado de completed a no completed y viceversa
+}
+
+
+
+// @params: identificador: id de la tarea a eliminar
+function eliminarTarea(identificador) {
+
+  // ✅ Identificar la tarea a eliminar
+  // ✅ Buscar el elemento en el array y buscar su posicion para luego borrarlo
+  const indicePelicula = TODOS.findIndex((tarea) => {
+
+    if (tarea.id === identificador) {
+      return true; // si encontramos la tarea, retornamos true
+    }
+
+    return false; // si no es la tarea que buscamos, retornamos false
+  });
+
+  console.log("Indice tarea a eliminar:", indicePelicula);
+
+  // Splice para eliminar un elemento del array
+  TODOS.splice(indicePelicula, 1); // eliminar 1 elemento en la posicion indicePelicula
+
+  renderizarTodos(); // volver a renderizar la lista de tareas
+}
+
+
 // listaTodoHTML.innerHTML = "<h2>TExto desde JS</h2>";
 
-// # Renderizar la lista de tareas en el HTML
+// # Renderizar la lista de tareas en el HTML\
+
+
 function renderizarTodos() {
 
   listaTodoHTML.innerHTML = ""; // limpiar el contenido previo
@@ -55,7 +94,7 @@ function renderizarTodos() {
                 <button class="btn btn-sm btn-primary">
                   <i class="fa-solid fa-pen"></i>
                 </button>
-                <button class="btn btn-sm btn-danger">
+                <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${todo.id})">
                   <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
@@ -79,6 +118,7 @@ todoFormHTML.addEventListener("submit", function(event) {
     date: el.date.value,
     completed: false
   }
+
   console.log(nuevaTarea);
 
   // Vamos a agregar la nueva tarea a nuestro array TODOS
