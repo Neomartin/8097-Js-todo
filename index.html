@@ -48,15 +48,29 @@
             <label class="form-label">Fecha de creación</label>
             <input type="date" class="form-control" name="date" placeholder="Fecha de creación">
           </div>
-          <button class="btn btn-primary" type="submit">Agregar</button>
-
+          <button class="btn btn-primary" type="submit" id="btnSubmit">Agregar</button>
         </form>
 
       </div>
 
-
       <div class="col-12 col-md-8">
-        <div>FILTROS</div>
+        <div class="py-3">
+          <!-- Botones para ordenar las tareas -->
+          <div class="d-flex gap-2 mb-3 flex-wrap mx-auto ">
+            <button class="btn btn-outline-primary" onclick="ordenarTareasPorNombre('asc')">
+              <i class="fa-solid fa-arrow-down-a-z"></i> Ordenar A-Z
+            </button>
+            <button class="btn btn-outline-primary" onclick="ordenarTareasPorNombre('desc')">
+              <i class="fa-solid fa-arrow-up-z-a"></i> Ordenar Z-A
+            </button>
+
+            <input  type="text" 
+                    class="form-control w-50 border-primary" 
+                    placeholder="Titulo tarea..."
+                    id="searchInput">
+          </div>
+
+        </div>
         <div>
           <h1>LISTA DE TAREAS</h1>
 
