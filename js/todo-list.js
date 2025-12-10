@@ -104,31 +104,59 @@ function renderizarTodos() {
     //     <img src="${todo.image}" alt="${todo.title} avatar">
     // </div>
 
-    listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
+    const divTodo = document.createElement("div");
+
+    divTodo.classList.add("todo-item");
+    if(todo.completed) {
+      divTodo.classList.add("todo-completed");
+    }
+
+    buttonEditar = document.createElement("button");
+    buttonEditar.classList.add("btn", "btn-sm", "btn-primary");
+    buttonEditar.setAttribute("data-id", todo.id);
+    buttonEditar.title = "Editar tarea";
+
+    // Añadir estilos al botón
+
+    buttonEditar.style.color = "white";
+    buttonEditar.style.borderRadius = "5px";
+    buttonEditar.backgroundColor = "royalblue";
+
+    buttonEditar.textContent = "✏️";
+    
+    console.log(divTodo);
+    console.log(buttonEditar);
+
+    divTodo.appendChild(buttonEditar);
+
+    listaTodoHTML.appendChild(divTodo);
+
+
+    // listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
               
-              <div class="todo-check todo-nueva">
-                <input  class="form-check-input" type="checkbox" ${isCompleted} onchange="cambiarEstadoTarea(${
-      todo.id
-    })" >
-              </div>
+    //           <div class="todo-check todo-nueva">
+    //             <input  class="form-check-input" type="checkbox" ${isCompleted} onchange="cambiarEstadoTarea(${
+    //   todo.id
+    // })" >
+    //           </div>
 
-              <div class="todo-info">
-                <div class="todo-title"> ${todo.title} </div>
-                <div class="todo-date"> ${formatearFecha(todo.date)} </div>
-              </div>
+    //           <div class="todo-info">
+    //             <div class="todo-title"> ${todo.title} </div>
+    //             <div class="todo-date"> ${formatearFecha(todo.date)} </div>
+    //           </div>
 
-              <div class="todo-actions">
-                <button class="btn btn-sm btn-primary" data-id="${todo.id}">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${
-                  todo.id
-                })">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
+    //           <div class="todo-actions">
+    //             <button class="btn btn-sm btn-primary" data-id="${todo.id}">
+    //               <i class="fa-solid fa-pen"></i>
+    //             </button>
+    //             <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${
+    //               todo.id
+    //             })">
+    //               <i class="fa-solid fa-trash"></i>
+    //             </button>
+    //         </div>
             
-          </div>`;
+    //       </div>`;
 
     obtenerBotonesEditar();
   }
