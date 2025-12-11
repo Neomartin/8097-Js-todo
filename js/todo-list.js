@@ -1,3 +1,4 @@
+// Definición de variables y constantes
 const TODOS = [
   {
     id: 10, // 10 === "10" -> false
@@ -30,13 +31,15 @@ const TODOS = [
     completed: false,
   },
 ];
-
+let todoEditing = null;
+let isDeletingMultiple = false; // Variable para rastrear el estado de eliminación múltiple
+// Referencias al DOM
 const searchInputHTML = document.querySelector("#searchInput");
-
-
 const listaTodoHTML = document.getElementById("lista-todo");
 const buttonSubmit = document.getElementById("btnSubmit");
 const todoFormHTML = document.getElementById("todoForm"); // obtener referencia al formulario
+const deleteMultipleBtn = document.getElementById("deleteMultipleBtn");
+
 
 renderizarTodos(); // llamar a la función para renderizar la lista de tareas
 
@@ -51,17 +54,13 @@ function obtenerBotonesEditar() {
       const id = buttonHTML.getAttribute("data-id"); // obtener el id de la tarea desde el atributo data-
       // Editar la tarea con el id obtenido
       console.log(+id);
+      
 
       editarTarea(+id);
     });
   });
 
 }
-
-console.log(searchInputHTML);
-
-
-let todoEditing = null;
 
 // @params: identificador: id de la tarea a eliminar
 function eliminarTarea(identificador) {
@@ -104,65 +103,73 @@ function renderizarTodos() {
     //     <img src="${todo.image}" alt="${todo.title} avatar">
     // </div>
 
-    const divTodo = document.createElement("div");
+    // const divTodo = document.createElement("div");
 
-    divTodo.classList.add("todo-item");
-    if(todo.completed) {
-      divTodo.classList.add("todo-completed");
-    }
+    // divTodo.classList.add("todo-item");
+    // if(todo.completed) {
+    //   divTodo.classList.add("todo-completed");
+    // }
 
-    buttonEditar = document.createElement("button");
-    buttonEditar.classList.add("btn", "btn-sm", "btn-primary");
-    buttonEditar.setAttribute("data-id", todo.id);
-    buttonEditar.title = "Editar tarea";
+    // buttonEditar = document.createElement("button");
+    // buttonEditar.classList.add("btn", "btn-sm", "btn-primary");
+    // buttonEditar.setAttribute("data-id", todo.id);
+    // buttonEditar.title = "Editar tarea";
 
-    // Añadir estilos al botón
+    // // Añadir estilos al botón
 
-    buttonEditar.style.color = "white";
-    buttonEditar.style.borderRadius = "5px";
-    buttonEditar.backgroundColor = "royalblue";
+    // buttonEditar.style.color = "white";
+    // buttonEditar.style.borderRadius = "5px";
+    // buttonEditar.backgroundColor = "royalblue";
 
-    buttonEditar.textContent = "✏️";
+    // buttonEditar.textContent = "✏️";
     
-    console.log(divTodo);
-    console.log(buttonEditar);
+    // console.log(divTodo);
+    // console.log(buttonEditar);
 
-    divTodo.appendChild(buttonEditar);
+    // divTodo.appendChild(buttonEditar);
 
-    listaTodoHTML.appendChild(divTodo);
+    // listaTodoHTML.appendChild(divTodo);
 
 
-    // listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
+    listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
               
-    //           <div class="todo-check todo-nueva">
-    //             <input  class="form-check-input" type="checkbox" ${isCompleted} onchange="cambiarEstadoTarea(${
-    //   todo.id
-    // })" >
-    //           </div>
+              <div class="todo-check todo-nueva">
+                <input  class="form-check-input" type="checkbox" ${isCompleted} onchange="cambiarEstadoTarea(${
+      todo.id
+    })" >
+              </div>
 
-    //           <div class="todo-info">
-    //             <div class="todo-title"> ${todo.title} </div>
-    //             <div class="todo-date"> ${formatearFecha(todo.date)} </div>
-    //           </div>
+              <div class="todo-info">
+                <div class="todo-title"> ${todo.title} </div>
+                <div class="todo-date"> ${formatearFecha(todo.date)} </div>
+              </div>
 
-    //           <div class="todo-actions">
-    //             <button class="btn btn-sm btn-primary" data-id="${todo.id}">
-    //               <i class="fa-solid fa-pen"></i>
-    //             </button>
-    //             <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${
-    //               todo.id
-    //             })">
-    //               <i class="fa-solid fa-trash"></i>
-    //             </button>
-    //         </div>
+              <div class="todo-actions">
+                <button class="btn btn-sm btn-primary" data-id="${todo.id}">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarTarea(${
+                  todo.id
+                })">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+
+            ${
+              isDeletingMultiple ? `<div class="todo-clear">
+                <input type="checkbox" class="form-check-input checkbox-delete" value="${
+                  todo.id
+                }" onchance="toggleDeleteMulti(${todo.id})" />
+              </div>` : ''
+            }
+
             
-    //       </div>`;
+            
+          </div>`;
 
     obtenerBotonesEditar();
   }
 }
-
-
 
 // # Manejo del evento submit del formulario para agregar nuevas tareas
 todoFormHTML.addEventListener("submit", function (event) {
@@ -324,6 +331,99 @@ function showSwalToast(titulo, descripcion, iconito = "success") {
     theme: "dark",
   });
 }
+
+/* 
+  TAREAS A REALIZAR PARA EL BORRADO POR LOTES DE TAREAS
+  1. Escuchar el evento en el botón "Seleccionar"
+  2. Al hacer click en el botón, vamos a mostrar la columna de checkboxes
+  3. Vamos a cambiar el botón "Seleccionar" por "Eliminar seleccionados"
+  4. Al hacer click en "Eliminar seleccionados", vamos a eliminar las tareas que estén seleccionadas
+  4.a Vamos a recorrer el array de tareas y por cada checkbox que esté seleccionado, vamos a eliminar la tarea correspondiente
+  5. Volvemos a renderizar la lista de tareas 
+  6. Volver al estado inicial (ocultar checkboxes, cambiar botón a "Seleccionar")
+*/
+// Escuchar el evento click en el botón de eliminación múltiple
+deleteMultipleBtn.addEventListener("click", function() {
+  // Tenemos que diferenciar la lógica entre los dos estados del botón
+  
+  // Si NO estamos en modo de eliminación múltiple (estado inicial)
+  if(!isDeletingMultiple) {
+    // Cambiamos el estado a true para activar el modo de eliminación múltiple
+    isDeletingMultiple = !isDeletingMultiple; // alternar el estado
+    
+    // Cambiamos el texto del botón dependiendo del estado
+    // Si isDeletingMultiple es true, mostramos "ELIMINAR SELECCIONADOS"
+    // Si es false, mostramos "SELECCIONAR"
+    deleteMultipleBtn.innerText = isDeletingMultiple
+      ? "ELIMINAR SELECCIONADOS"
+      : "SELECCIONAR";
+    
+    // Alternamos la clase btn-danger para cambiar el color del botón a rojo
+    deleteMultipleBtn.classList.toggle("btn-danger");
+    
+    // Volver a renderizar la lista para que aparezcan los checkboxes
+    renderizarTodos();
+  } else {
+    // Si YA estamos en modo de eliminación múltiple, ejecutamos la eliminación
+    deleteMultipleTodos();
+  }
+  
+})
+
+function deleteMultipleTodos() {
+  // Obtener todos los checkboxes que tienen la clase "checkbox-delete" y están marcados (:checked)
+  const checksDelete = listaTodoHTML.querySelectorAll(".checkbox-delete:checked");
+
+  // Crear un array vacío donde guardaremos los IDs de las tareas a eliminar
+  const idsToDelete = [];
+
+  // Recorrer cada checkbox seleccionado
+  checksDelete.forEach((checkbok) => {
+    // Obtener el valor del checkbox (que es el ID de la tarea)
+    // El símbolo + convierte el string a número
+    const id = +checkbok.value;
+    
+    // Agregar el ID al array de IDs a eliminar
+    idsToDelete.push(id);
+
+  })
+
+  // Recorrer cada ID que vamos a eliminar
+  idsToDelete.forEach(id => {
+    // Buscar el índice (posición) de la tarea en el array TODOS
+    const indice = TODOS.findIndex(tarea => {
+      // Si el ID de la tarea coincide con el ID que buscamos
+      if(tarea.id === id) {
+        return true // Encontramos la tarea
+      }
+    })
+    
+    // Eliminar la tarea del array usando splice
+    // splice(indice, 1) significa: en la posición "indice", elimina 1 elemento
+    TODOS.splice(indice, 1)
+  })
+
+  // Quitar la clase btn-danger del botón (volver al color original)
+  deleteMultipleBtn.classList.toggle('btn-danger')
+  
+  // Cambiar el texto del botón de vuelta a "SELECCIONAR"
+  deleteMultipleBtn.innerText = "SELECCIONAR"
+  
+  // Cambiar el estado a false para salir del modo de eliminación múltiple
+  isDeletingMultiple = false;
+  
+  // Volver a renderizar la lista para ocultar los checkboxes y mostrar las tareas actualizadas
+  renderizarTodos();
+
+}
+
+
+
+
+
+
+
+
 
 // botonHTML.addEventListener("click", function() {
 

@@ -37,7 +37,7 @@
 
   <div class="container-xl">
     <div class="row">
-
+      <!-- #Div del formulario -->
       <div class="col-12 col-md-4">
         
         <form id="todoForm" class="p-5 bg-dark-subtle">
@@ -60,7 +60,7 @@
         </form>
 
       </div>
-
+      <!-- #Div de la lista de tareas -->
       <div class="col-12 col-md-8">
         <div class="py-3">
           <!-- Botones para ordenar las tareas -->
@@ -80,7 +80,10 @@
 
         </div>
         <div>
-          <h1>LISTA DE TAREAS</h1>
+          <h1 class="d-flex justify-content-between">
+            LISTA DE TAREAS 
+            <button class="btn btn-sm btn-warning" id="deleteMultipleBtn">SELECCIONAR</button>
+          </h1>
 
           <div class="todo-list" id="lista-todo">
             <!-- Esto inicialmente estará vacío -->

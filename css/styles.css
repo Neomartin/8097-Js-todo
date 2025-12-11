@@ -4,12 +4,11 @@
   display: grid;
   gap: 10px;
   padding: 1rem 0;
-  border: 2px solid greenyellow;
 
 
   .todo-item {
-    display: grid;
-    grid-template-columns: 60px auto 1fr auto;
+    display: flex;
+    /* grid-template-columns: auto 1fr auto; */
     gap: 10px;
     border: 2px solid royalblue;
     border-radius: .5rem;
@@ -21,6 +20,10 @@
 
     .todo-check {
       padding: .5rem;
+    }
+
+    .todo-info {
+      flex: 1;
     }
 
     .todo-image img {
@@ -39,6 +42,14 @@
     .todo-date {
       font-size: .75rem;
       color: rgb(159, 159, 159);
+    }
+
+    .todo-clear {
+      input[type="checkbox"]:checked {
+        background-color: red !important;
+        border-color: red !important;
+      }
+
     }
   }
 
