@@ -1,36 +1,8 @@
 // Definición de variables y constantes
-const TODOS = [
-  {
-    id: 10, // 10 === "10" -> false
-    title: "Comprar pan",
-    date: "2023-10-20",
-    completed: false,
-  },
-  {
-    id: 20,
-    title: "Estudiar JavaScript",
-    date: "2025-10-21",
-    completed: true,
-  },
-  {
-    id: 30,
-    title: "Hacer ejercicio",
-    date: "2024-10-22",
-    completed: false,
-  },
-  {
-    id: 40,
-    title: "Leer un libro",
-    date: "2025-10-23",
-    completed: true,
-  },
-  {
-    id: 50,
-    title: "Llamar a mamá",
-    date: "2023-10-24",
-    completed: false,
-  },
-];
+let TODOS = []; // array para almacenar las tareas
+
+const SERVER_URL = "https://694332dc69b12460f313f671.mockapi.io";
+
 let todoEditing = null;
 let isDeletingMultiple = false; // Variable para rastrear el estado de eliminación múltiple
 // Referencias al DOM
@@ -41,7 +13,31 @@ const todoFormHTML = document.getElementById("todoForm"); // obtener referencia 
 const deleteMultipleBtn = document.getElementById("deleteMultipleBtn");
 
 
-renderizarTodos(); // llamar a la función para renderizar la lista de tareas
+obtenerTareas() // Llamamos a la función para obtener las tareas desde el servidor
+
+
+// # Obtener tareas desde el servidor (MockAPI)
+
+async function obtenerTareas() {
+  console.log("Obteniendo tareas desde el servidor...");  
+  try {
+    
+    const response = await axios.get(`${SERVER_URL}/todos`);
+  
+    TODOS = response.data;
+
+    renderizarTodos(); // renderizar las tareas obtenidas
+
+  } catch (error) {
+    console.log(error)
+    showSwalToast("Error", "No se pudieron cargar las tareas desde el servidor", "error");
+
+    //        title         text                                              icon
+    // Swal.fire("Error", "No se pudieron cargar las tareas desde el servidor", "error");
+  }
+
+}
+
 
 function obtenerBotonesEditar() {
   const todosLosBotonesEditar = listaTodoHTML.querySelectorAll(".btn-primary");
@@ -65,25 +61,46 @@ function obtenerBotonesEditar() {
 // @params: identificador: id de la tarea a eliminar
 function eliminarTarea(identificador) {
 
-  const confirmar = confirm("¿Estás seguro de que deseas eliminar esta tarea?");
+  try {
+    
+    Swal.fire({
+      title: '¿Estás seguro de eliminar la tarea?',
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f00',
+      confirmButtonText: 'Sí, eliminar',
+      theme: 'dark',
+      cancelButtonText: 'Cancelar',
+      
+    }).then(async(result) => {
+      // Si isConfirmed es true, el usuario confirmó la eliminación
+      if(result.isConfirmed) {
 
-  if(confirmar) {
-    // ✅ Identificar la tarea a eliminar
-    // ✅ Buscar el elemento en el array y buscar su posicion para luego borrarlo
-    const indicePelicula = TODOS.findIndex((tarea) => {
-      if (tarea.id === identificador) {
-        return true; // si encontramos la tarea, retornamos true
+        try {
+          // Eliminamos la tarea del servidor
+          const response = await axios.delete(`${SERVER_URL}/todos/${identificador}`)
+
+          showSwalToast("Tarea eliminada!", "La tarea se eliminó correctamente", "success");
+          
+          obtenerTareas(); // Volver a obtener las tareas desde el servidor
+
+
+        } catch (error) {
+          console.log(error)
+          showSwalToast("Error", "No se pudo eliminar la tarea del servidor", "error");
+        }
+
       }
+    })
 
-      return false; // si no es la tarea que buscamos, retornamos false
-    });
 
-    console.log("Indice tarea a eliminar:", indicePelicula);
 
-    // Splice para eliminar un elemento del array
-    TODOS.splice(indicePelicula, 1); // eliminar 1 elemento en la posicion indicePelicula
 
-    renderizarTodos(); // volver a renderizar la lista de tareas
+
+  } catch (error) {
+    console.log(error)
+    showSwalToast("Error", "No se pudo eliminar la tarea del servidor", "error");
   }
 
 
@@ -171,30 +188,65 @@ function renderizarTodos() {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // # Manejo del evento submit del formulario para agregar nuevas tareas
-todoFormHTML.addEventListener("submit", function (event) {
+todoFormHTML.addEventListener("submit", async function (event) {
   event.preventDefault(); // prevenir el comportamiento por defecto del formulario
   const el = event.target.elements;
 
   if (todoEditing === null) {
-    // AGREGAMOS UNA NUEVA TAREA
-    // Obtener los datos del formulario y armar una nueva tarea
-    const nuevaTarea = {
-      id: Date.now(), // generar un id único basado en la fecha actual
-      title: el.title.value, // el.title hace referencia al input con name="title"
-      date: el.date.value, // "AAAA-MM-DD" => "DD-MM-AAAA"
-      // image: el.image.value,
-      completed: false,
-    };
 
-    // Vamos a agregar la nueva tarea a nuestro array TODOS
-    TODOS.push(nuevaTarea);
 
-    showSwalToast("Tarea Agregada!", "La tarea se agregó correctamente");
+    try {
+      // -AGREGAMOS UNA NUEVA TAREA
+      // Obtener los datos del formulario y armar una nueva tarea
+      const nuevaTarea = {
+        id: Date.now(), // generar un id único basado en la fecha actual
+        title: el.title.value, // el.title hace referencia al input con name="title"
+        date: el.date.value, // "AAAA-MM-DD" => "DD-MM-AAAA"
+        // image: el.image.value,
+        completed: false,
+      };
+
+      // Vamos a agregar la nueva tarea a nuestro array TODOS
+      // . TODOS.push(nuevaTarea);
+      // Vamos a crear o guardar la tarea en el servidor (MockAPI)
+      await axios.post(`${SERVER_URL}/todos`, nuevaTarea);
+
+
+      showSwalToast("Tarea Agregada!", "La tarea se agregó correctamente");
+      obtenerTareas(); // volver a obtener las tareas desde el servidor
+
+
+    } catch (error) {
+
+      console.log(error)
+      showSwalToast("Error", "No se pudo agregar la tarea al servidor", "error");
+
+    }
+
+
+
+
+    
 
 
   } else {
-    // EDITAMOS UNA TAREA EXISTENTE
+    // -EDITAMOS UNA TAREA EXISTENTE
     // Actualizar los datos de la tarea con los valores del formulario
     todoEditing.title = el.title.value;
     todoEditing.date = el.date.value;
@@ -210,9 +262,8 @@ todoFormHTML.addEventListener("submit", function (event) {
   // Limpiar el formulario
   // todoFormHTML.reset();
 
-  console.log(TODOS);
 
-  renderizarTodos(); // volver a renderizar la lista de tareas
+  // renderizarTodos(); // volver a renderizar la lista de tareas
 });
 
 searchInputHTML.addEventListener("keyup", function (event) {
