@@ -49,10 +49,10 @@ function obtenerBotonesEditar() {
       // Puedo recibir el evento del click
       const id = buttonHTML.getAttribute("data-id"); // obtener el id de la tarea desde el atributo data-
       // Editar la tarea con el id obtenido
-      console.log(+id);
+      console.log(id);
       
 
-      editarTarea(+id);
+      editarTarea(id);
     });
   });
 
@@ -151,9 +151,10 @@ function renderizarTodos() {
     listaTodoHTML.innerHTML += `<div class="todo-item ${isCompleted}">
               
               <div class="todo-check todo-nueva">
-                <input  class="form-check-input" type="checkbox" ${isCompleted} onchange="cambiarEstadoTarea(${
-      todo.id
-    })" >
+                <input  class="form-check-input" 
+                        type="checkbox" 
+                        ${isCompleted} 
+                        onchange="cambiarEstadoTarea(${todo.id})" >
               </div>
 
               <div class="todo-info">
@@ -189,27 +190,12 @@ function renderizarTodos() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // # Manejo del evento submit del formulario para agregar nuevas tareas
 todoFormHTML.addEventListener("submit", async function (event) {
   event.preventDefault(); // prevenir el comportamiento por defecto del formulario
   const el = event.target.elements;
 
   if (todoEditing === null) {
-
 
     try {
       // -AGREGAMOS UNA NUEVA TAREA
@@ -239,28 +225,43 @@ todoFormHTML.addEventListener("submit", async function (event) {
 
     }
 
+  } else {
 
+    try {
+      // Actualizar nuestra tarea en el servidor (MockAPI)
 
+      const tareaActualizada = {
+        title: el.title.value, // title 3 =>  Titulo ac
+        date: el.date.value,
+      };
+
+      await axios.put(
+        `${SERVER_URL}/todos/${todoEditing.id}`,
+        tareaActualizada
+      );
+
+      obtenerTareas(); // volver a obtener las tareas desde el servidor
+
+      buttonSubmit.classList.toggle("btn-success");
+      buttonSubmit.textContent = "Agregar";
+
+      showSwalToast(
+        "Tarea Editada!",
+        "La tarea se editó correctamente",
+        "info"
+      );
+    } catch (error) {
+      console.log(error)
+      showSwalToast("Error", "No se pudo editar la tarea en el servidor", "error");
+    }
 
     
-
-
-  } else {
-    // -EDITAMOS UNA TAREA EXISTENTE
-    // Actualizar los datos de la tarea con los valores del formulario
-    todoEditing.title = el.title.value;
-    todoEditing.date = el.date.value;
-
-    buttonSubmit.classList.toggle("btn-success");
-    buttonSubmit.textContent = "Agregar";
-
-    showSwalToast("Tarea Editada!", "La tarea se editó correctamente", "info");
   }
 
   todoEditing = null;
 
   // Limpiar el formulario
-  // todoFormHTML.reset();
+  todoFormHTML.reset();
 
 
   // renderizarTodos(); // volver a renderizar la lista de tareas
@@ -287,21 +288,38 @@ function formatearFecha(fecha) {
   return fechaFormateada;
 }
 
-function cambiarEstadoTarea(idRecibido) {
-  // Buscar la tarea en el array por su id
-  const tarea = TODOS.find((t) => {
-    if (t.id === idRecibido) {
-      return true;
-    }
-    return false;
-  });
-  // y cambiar su estado de completed a no completed y viceversa
-  tarea.completed = !tarea.completed; // cambiar el estado
-  // Pintar la lista actualizada
-  renderizarTodos();
+async function cambiarEstadoTarea(idRecibido) {
+
+  const id = idRecibido.toString();
+  
+  try {
+    
+    // Buscar la tarea en el array por su id -> find
+    const tarea = TODOS.find((todo) => todo.id === id);
+
+    console.log("Tarea encontrada para cambiar estado:", tarea);
+
+    // tarea.completed = !tarea.completed; // alternar el estado
+
+    await axios.put(`${SERVER_URL}/todos/${idRecibido}`, { completed: !tarea.completed });
+
+    showSwalToast("Tarea Actualizada!", "El estado de la tarea se actualizó correctamente", "success");
+
+    // Pintar la lista actualizada
+    obtenerTareas();
+
+
+  } catch (error) {
+    console.log(error)
+    showSwalToast("Error", "No se pudo cambiar el estado de la tarea en el servidor", "error");
+  }
+
+
 }
 
 function editarTarea(id) {
+
+  console.log("Editar tarea con id:", id);
   // lógica para editar la tarea
   // Buscar la tarea en el array por su id -> find
   const tarea = TODOS.find((todo) => {
